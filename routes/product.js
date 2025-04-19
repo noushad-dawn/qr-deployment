@@ -6,6 +6,7 @@ const {authenticate} = require('../middleware/auth'); // JWT middleware
 router.post('/add', authenticate, async (req, res) => {
   try {
     const {
+      category,
       productName,
       quantity,
       price,
@@ -20,6 +21,7 @@ router.post('/add', authenticate, async (req, res) => {
     
     const newProduct = new Product({
       clientId,
+      category,
       productDetails: {
         productName,
         quantity,
@@ -46,7 +48,7 @@ router.post('/add', authenticate, async (req, res) => {
 
 router.get('/', authenticate, async (req, res) => {
   try {
-    const products = await Product.find({ clientId: req.user.clientId });
+    const products = await Product.find({ clientId: req.user.clientId }).populate('processStatus.userId', 'name email'); // Populate user details
     res.status(200).json(products);
   } catch (err) {
     console.error(err);
@@ -88,6 +90,18 @@ router.patch('/assign-process/:id', authenticate, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Failed to assign process' });
+  }
+});
+
+router.delete('/delete/:id', authenticate, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const product = await Product.findByIdAndDelete(id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+    res.status(200).json({ message: 'Product deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to delete product' });
   }
 });
 

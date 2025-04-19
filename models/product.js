@@ -6,7 +6,10 @@ const productSchema = new mongoose.Schema({
     ref: "Client",
     required: true,
   },
-
+  category: {
+    type: String,
+    required: true,
+  },
   productDetails: {
     productName: { type: String, required: true },
     quantity: { type: Number, required: true },

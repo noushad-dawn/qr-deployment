@@ -7,14 +7,14 @@ const { authenticate } = require("../middleware/auth");
 router.post("/process-flow", authenticate, async (req, res) => {
   try {
     const { steps } = req.body;
-
+    console.log(steps);
     if (!steps || !Array.isArray(steps) || steps.length === 0) {
       return res.status(400).json({ message: "Steps are required" });
     }
 
     // Check if flow already exists for the client
-    const existingFlow = await ProcessFlow.findOne({ clientId: req.client.id });
-
+    const existingFlow = await ProcessFlow.findOne({ clientId: req.user.clientId });
+    console.log(existingFlow);
     if (existingFlow) {
       // Update existing flow
       existingFlow.steps = steps;
@@ -24,10 +24,10 @@ router.post("/process-flow", authenticate, async (req, res) => {
 
     // Create new flow
     const newFlow = new ProcessFlow({
-      clientId: req.client.id,
+      clientId: req.user.clientId,
       steps,
     });
-
+    console.log(newFlow);
     await newFlow.save();
     res.status(201).json({ message: "Process flow created", flow: newFlow });
   } catch (error) {
@@ -38,10 +38,10 @@ router.post("/process-flow", authenticate, async (req, res) => {
 
 router.get("/process-flow", authenticate, async (req, res) => {
     try {
-      const flow = await ProcessFlow.findOne({ clientId: req.client.id });
+      const flow = await ProcessFlow.findOne({ clientId: req.user.clientId });
   
       if (!flow) {
-        return res.status(404).json({ message: "No process flow found" });
+        return res.status(200).json({ message: "No process flow found" });
       }
   
       res.status(200).json({ flow });
