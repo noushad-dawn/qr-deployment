@@ -15,6 +15,11 @@ mongoose.connect(process.env.MONGO_URI)
 
 app.use(express.urlencoded({ extended: true }));
 
+//  Add this route handler
+app.get('/', (req, res) => {
+  res.send('QR Backend API is running!');
+});
+
 // API routes
 app.use('/api/client', require('./routes/authClient'));
 app.use('/api/user', require('./routes/authUser'));
