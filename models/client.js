@@ -10,7 +10,7 @@ const clientSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
-  }
+  },
 });
 
 clientSchema.pre('save', async function (next) {
